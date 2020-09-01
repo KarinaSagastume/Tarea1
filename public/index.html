@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <body>
+    <div id="contenidoClima">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" 
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" 
+    crossorigin="anonymous">
+
+
+    
+ 
+    <div id="titulo">
+      <h1 > CONDICIONES METEREOLÓGICAS
+    
+      </h1>
+    </div>
+    <div class="container">
+      <div id="content">
+          <div id="viewContent">
+        
+              <select id="ciudadSelect">
+                  <option value="Select">Selecciona una Ciudad</option>
+                  <option value="3527646">Ciudad de Mexico</option>
+                  <option value="3522509">Oaxaca</option>
+                  <option value="3514783">Veracruz</option>
+                  <option value="3531011">Chiapas</option>
+                  <option value="3531730">Campeche</option>
+              </select>
+              <button id="submit">Seleccionar</button>
+              <div class="textAlignCenter">
+                  <img src="" />
+              </div>
+              <div id="message"></div>
+          </div>
+      </div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script>
+    
+      $(document).ready(function () {
+          $("#reset").click(function (e) {
+              $("#ciudadSelect").val("Select")
+              $("#message").html("")
+          });
+
+          $("#submit").click(function (e) {
+              var validate = Validate();
+              $("#message").html(validate);
+              if (validate.length == 0) {
+                  $.ajax({
+                      type: "POST",
+                      url: "http://api.openweathermap.org/data/2.5/weather?id=" + $("#ciudadSelect").val() + "&appid=ba838ebdab50ac96a7f0fe885b6a955d&units=metric&lang=es" ,
+                      dataType: "json",
+                      success: function (result, status, xhr) {
+                          var table = $("<table><tr><th>Descripción del Clima</th></tr>");
+
+                          table.append("<tr><td>Ciudad:</td><td>" + result["name"] + "</td></tr>");
+                          table.append("<tr><td>País:</td><td>" + result["sys"]["country"] + "</td></tr>");
+                          table.append("<tr><td>Temperatura:</td><td>" + result["main"]["temp"] + "°C</td></tr>");
+                          table.append("<tr><td>Humedad:</td><td>" + result["main"]["humidity"] + "</td></tr>");
+                          table.append("<tr><td>Clima:</td><td>" + result["weather"][0]["description"] + "</td></tr>");
+
+                          $("#message").html(table);
+                      },
+                      error: function (xhr, status, error) {
+                          alert("Result: " + status + " " + error + " " + xhr.status + " " + xhr.statusText)
+                      }
+                  });
+              }
+          });
+
+          $(document).ajaxStart(function () {
+              $("img").show();
+          });
+
+          $(document).ajaxStop(function () {
+              $("img").hide();
+          });
+
+          function Validate() {
+              var errorMessage = "";
+              if ($("#ciudadSelect").val() == "Select") {
+                  errorMessage += "► Selecciona la ciudad";
+              }
+              return errorMessage;
+          }
+      });
+   
+  </script>
+
+    
+
+<div id="root"></div>
+
+  </body>
+</div>
+</html>
